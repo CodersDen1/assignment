@@ -4,7 +4,7 @@ import { login, logout } from './store/authSlice'; // Import actions from authSl
 
 function App() {
   return (
-    <></>
+    <>this is App page</>
   );
 }
 

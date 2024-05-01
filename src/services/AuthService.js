@@ -1,39 +1,68 @@
+/* eslint-disable no-useless-catch */
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export class AuthService{
 
-    async loginUser(username , password){
-        try{
-            const loggedUser =  await axios.post("https://dummyjson.com/auth/login")
-                    .then((res)=>console.log(res))
-                    .catch(err=> console.log(err))
-                return loggedUser;
-        }catch(error){
-            throw  new error;
-        }
-    }
-
-    async refreshUserToken(){
+    async loginUser(username, password) {
         try {
-            return await axios.post("https://dummyjson.com/auth/refresh")
-                                .then((res)=> console.log(res))
-                                .catch(err=> console.log(err));
+          const response = await axios.post('https://dummyjson.com/auth/login', {
+            username: username,
+            password: password,
+          });
+          const token = response.data.token;
+          Cookies.set('auth_token', token, { expires: 7 });
+          Cookies.set('is_logged_in', 'true', { expires: 7 });
+          return response.data;
         } catch (error) {
-            throw new error;
+          throw error;
         }
-    }
+      }
+    
 
-    async getUserInfo(){
+      async refreshUserToken() {
         try {
-            const userDetails  = await axios.get("https://dummyjson.com/auth/me")
-                                            .then((res)=>console.log(res))
-                                            .catch(err=> console.log(err));
-            return userDetails;
+          const token = Cookies.get('auth_token');
+          if (!token) {
+            throw new Error('Token not found');
+          }
+          
+          const response = await axios.post('https://dummyjson.com/auth/refresh', {
+            expiresInMins: 30, 
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          
+          const refreshedToken = response.data.token;
+          Cookies.set('auth_token', refreshedToken, { expires: 7 }); 
+          
+          return response.data;
         } catch (error) {
-            throw new error;
+          throw error;
         }
+      }
+    
+
+      async getUserInfo() {
+        try {
+          const token = Cookies.get('auth_token');
+          if(!token){
+              throw new Error('Token not found')
+          }
+       const response = await axios.get('https://dummyjson.com/auth/me',{
+          headers:{
+              Authorization:`Bearer ${token}`
+          }
+       });
+       return response.data;
+        } catch (error) {
+          throw error;
+        }
+      }
     }
-}
 
 
 const authService = new AuthService();
