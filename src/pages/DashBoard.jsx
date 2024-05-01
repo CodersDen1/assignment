@@ -1,12 +1,10 @@
 import React from 'react'
+import TrackChart from '../components/TrackChart'
 
 function DashBoard() {
   return (
     <div>
-      <h1 className='text-4xl'>
-        hello DashBoard
-      </h1>
-      
+      <TrackChart  symbol={'IBM'}/>
       </div>
   )
 }

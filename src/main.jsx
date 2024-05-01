@@ -18,7 +18,7 @@ const isLoggedIn = Cookies.get('is_logged_in')
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
-    <Route path='/' element={isLoggedIn?<AuthPage/>:<DashBoard />} />
+    <Route path='/' element={<AuthPage/>} />
      <Route path='/api' element={<Layout />} >
      
        <Route element={<ProtectedRoutes/>} >
